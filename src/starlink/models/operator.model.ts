@@ -8,7 +8,7 @@ export class Operator {
     uuid?: string;
     name: string;
     surname: string;
-    operatorGroupOfSatellites: GroupOfSatelites[];
+    operatorGroupsOfSatellites: GroupOfSatelites[];
   // Ma miec: imie, nazwisko, uuid
   // Ma umożliwiać:
   // - zmianę wysokości i wpółrzędnych pojedynczych satelit
@@ -23,7 +23,7 @@ export class Operator {
     }
 
     changeSatelliteAltitude(sateliteUuid: string, altitude: number) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
                 if (satelite.uuid === sateliteUuid) {
                     satelite.altitude = altitude;
@@ -33,7 +33,7 @@ export class Operator {
     }
 
     changeSatelliteCoordinates(sateliteUuid: string, coordinates: Coordinates) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
                 if (satelite.uuid === sateliteUuid) {
                     satelite.coordinates = coordinates;
@@ -43,7 +43,7 @@ export class Operator {
     }
 
     changeSatelliteSolarSailStatus(sateliteUuid: string, solarSailStatus: EnableStatus) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
                 if (satelite.uuid === sateliteUuid) {
                     satelite.solarSailStatus = solarSailStatus;
@@ -53,7 +53,7 @@ export class Operator {
     }
     
     changeSatelliteSignalTransmissionStatus(sateliteUuid: string, signalTransmissionStatus: EnableStatus) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
                 if (satelite.uuid === sateliteUuid) {
                     satelite.signalTransmissionStatus = signalTransmissionStatus;
@@ -63,7 +63,7 @@ export class Operator {
     }
 
     changeSatelliteGroupAltitude(groupOfSatelitesUuid: string, altitude: number) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
                 operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
                 satelite.altitude = altitude);
@@ -72,7 +72,7 @@ export class Operator {
     }
 
     changeSatelliteGroupCoordinates(groupOfSatelitesUuid: string, coordinates: Coordinates) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
                 operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
                 satelite.coordinates = coordinates);
@@ -81,7 +81,7 @@ export class Operator {
     }
 
     changeSatelliteGroupSolarSailStatus(groupOfSatelitesUuid: string, solarSailStatus: EnableStatus) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
                 operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
                 satelite.solarSailStatus = solarSailStatus);
@@ -90,7 +90,7 @@ export class Operator {
     }
 
     changeSatelliteGroupSignalTransmissionStatus(groupOfSatelitesUuid: string, signalTransmissionStatus: EnableStatus) {
-        this.operatorGroupOfSatellites.forEach(operatorSatellitesGroup => {
+        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
             if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
                 operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
                 satelite.signalTransmissionStatus = signalTransmissionStatus);
@@ -99,6 +99,6 @@ export class Operator {
     }
 
     prepareGroupOfSatelites(uuid?: string, satelites?: Satellite[]) {
-        this.operatorGroupOfSatellites.push(new GroupOfSatelites(uuid, satelites));
+        this.operatorGroupsOfSatellites.push(new GroupOfSatelites(uuid, satelites));
     }
 }
