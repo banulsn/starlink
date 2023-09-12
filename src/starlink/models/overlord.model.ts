@@ -1,24 +1,27 @@
-import { EnableStatus } from "../types/enable-status.type";
+import { EnableStatus } from "../enums/enable-status.enum";
 import { Operator } from "./operator.model";
-import { Satellite } from "./satellite.model";
 
 export class Overlord extends Operator {
-  // Ma mieć: imie, nazwisko, uuid
-  // Ma umożliwiać:
-  // - to samo co zwykły operator
-  // - może wyłączyć poszczególne satelity, wybrane grupy lub cały system (wszystkie dostępne satelity)
-    constructor(operator) {
-        super(operator);
-    }
-
-    changeSatelliteSatelliteActivationStatus(satelite: Satellite, satelliteActivationStatus: EnableStatus) {
-      return satelite.satelliteActivationStatus = satelliteActivationStatus;
+  constructor(operator) {
+      super(operator);
   }
 
-    changeSatelliteGroupSatelliteActivationStatus(groupOfSatelites: Satellite[], satelliteActivationStatus: EnableStatus) {
-      return groupOfSatelites.map((satelite: Satellite) => {
-          satelite.satelliteActivationStatus = satelliteActivationStatus;
-      });
+  changeSatelliteActivationStatus(satelliteUuid: string, newStatus: EnableStatus): void {
+    const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
+    if (satellite) {
+        satellite.setSatelliteActivationStatus(newStatus);
+    }
+  }
+
+  changeSatelliteActivationStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
+    const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
+    if (index !== -1) {
+        this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteActivationStatus(satelliteUuid, newStatus));
+    }
+  }
+
+  changeActivationStatusOfAllSatellites(newStatus: EnableStatus) {
+    this.satellites.forEach(satellite => this.changeSatelliteActivationStatus(satellite.uuid, newStatus));
   }
    
 }

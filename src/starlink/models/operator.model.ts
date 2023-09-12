@@ -1,104 +1,99 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Satellite } from './satellite.model';
 import { Coordinates } from '../types/coordinates.type';
-import { EnableStatus } from '../types/enable-status.type';
+import { EnableStatus } from '../enums/enable-status.enum';
 import { GroupOfSatelites } from './group-of-satelites.model';
 
 export class Operator {
     uuid?: string;
     name: string;
     surname: string;
-    operatorGroupsOfSatellites: GroupOfSatelites[];
-  // Ma miec: imie, nazwisko, uuid
-  // Ma umożliwiać:
-  // - zmianę wysokości i wpółrzędnych pojedynczych satelit
-  // - zmianę wysokości i wpółrzędnych całej grupy
-  // - otwieranie i składanie żagli słonecznych dla pojedynczego egzemplarza jak i całej grupy
-  // - właczanie i wyłączanie sygnału nadawczego dla pojedynczych satelit oraz grup
-  // - może tworzyć nowe grupy
+    satellites?: Satellite[];
+    groupsOfSatellites?: GroupOfSatelites[];
+    
     constructor(operator: Operator) {
         this.uuid = operator.uuid ? operator.uuid : uuidv4();
         this.name = operator.name;
         this.surname = operator.surname;
+        this.satellites = operator.satellites && operator.satellites.length ? operator.satellites : [];
+        this.groupsOfSatellites = [];
     }
 
-    changeSatelliteAltitude(sateliteUuid: string, altitude: number) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
-                if (satelite.uuid === sateliteUuid) {
-                    satelite.altitude = altitude;
-                }
-            });
-        });
+    addSatellite(satellite: Satellite) {
+        this.satellites.push(satellite);
     }
 
-    changeSatelliteCoordinates(sateliteUuid: string, coordinates: Coordinates) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
-                if (satelite.uuid === sateliteUuid) {
-                    satelite.coordinates = coordinates;
-                }
-            });
-        });
+    removeSatellite(satelliteUuid: string): void {
+        const index = this.satellites.findIndex(satellite => satellite.uuid === satelliteUuid);
+        if (index !== -1) {
+            this.satellites.splice(index, 1);
+        }
     }
 
-    changeSatelliteSolarSailStatus(sateliteUuid: string, solarSailStatus: EnableStatus) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
-                if (satelite.uuid === sateliteUuid) {
-                    satelite.solarSailStatus = solarSailStatus;
-                }
-            });
-        });
+    changeSatelliteAltitude(satelliteUuid: string, altitude: number) {
+        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
+        if (satellite) {
+            satellite.setAltitude(altitude);
+        }
+    }
+
+    changeSatelliteCoordinates(satelliteUuid: string, coordinates: Coordinates) {
+        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
+        if (satellite) {
+            satellite.setCoordinates(coordinates);
+        }
+    }
+
+    changeSatelliteSolarSailStatus(satelliteUuid: string, newStatus: EnableStatus): void {
+        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
+        if (satellite) {
+            satellite.setSolarSailStatus(newStatus);
+        }
+    }
+
+    changeSatelliteSignalTransmissionStatus(satelliteUuid: string, newStatus: EnableStatus): void {
+        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
+        if (satellite) {
+            satellite.setSignalTransmissionStatus(newStatus);
+        }
+    }
+
+    //Methods for groups
+
+    prepareGroupOfSatelites(satellitesUuid?: string[]): void {
+        const newGroupOfSatellites = new GroupOfSatelites();
+        if (satellitesUuid && satellitesUuid.length) {
+            newGroupOfSatellites.satellitesUuid = [...satellitesUuid, ...newGroupOfSatellites.satellitesUuid];
+        }
+        this.groupsOfSatellites.push(newGroupOfSatellites);
+    }
+
+    changeSatelliteAltitudeInGroup(groupOfSatellitesUuid: string, altitude: number) {
+        const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
+        if (index !== -1) {
+            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteAltitude(satelliteUuid, altitude));
+        }
+    }
+
+    changeSatelliteCoordinatesInGroup(groupOfSatellitesUuid: string, coordinates: Coordinates) {
+        const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
+        if (index !== -1) {
+            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteCoordinates(satelliteUuid, coordinates));
+        }
     }
     
-    changeSatelliteSignalTransmissionStatus(sateliteUuid: string, signalTransmissionStatus: EnableStatus) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) => {
-                if (satelite.uuid === sateliteUuid) {
-                    satelite.signalTransmissionStatus = signalTransmissionStatus;
-                }
-            });
-        });
+    changeSatelliteSolarSailStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
+        const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
+        if (index !== -1) {
+            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteSolarSailStatus(satelliteUuid, newStatus));
+        }
     }
 
-    changeSatelliteGroupAltitude(groupOfSatelitesUuid: string, altitude: number) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
-                operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
-                satelite.altitude = altitude);
-            }
-        });
+    changeSatelliteSignalTransmissionStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
+        const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
+        if (index !== -1) {
+            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteSignalTransmissionStatus(satelliteUuid, newStatus));
+        }
     }
 
-    changeSatelliteGroupCoordinates(groupOfSatelitesUuid: string, coordinates: Coordinates) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
-                operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
-                satelite.coordinates = coordinates);
-            }
-        });
-    }
-
-    changeSatelliteGroupSolarSailStatus(groupOfSatelitesUuid: string, solarSailStatus: EnableStatus) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
-                operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
-                satelite.solarSailStatus = solarSailStatus);
-            }
-        });
-    }
-
-    changeSatelliteGroupSignalTransmissionStatus(groupOfSatelitesUuid: string, signalTransmissionStatus: EnableStatus) {
-        this.operatorGroupsOfSatellites.forEach(operatorSatellitesGroup => {
-            if (operatorSatellitesGroup.uuid === groupOfSatelitesUuid) {
-                operatorSatellitesGroup.groupOfSatelites.forEach((satelite: Satellite) =>
-                satelite.signalTransmissionStatus = signalTransmissionStatus);
-            }
-        });
-    }
-
-    prepareGroupOfSatelites(uuid?: string, satelites?: Satellite[]) {
-        this.operatorGroupsOfSatellites.push(new GroupOfSatelites(uuid, satelites));
-    }
 }
