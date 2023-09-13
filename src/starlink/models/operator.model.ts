@@ -28,6 +28,18 @@ export class Operator {
         if (index !== -1) {
             this.satellites.splice(index, 1);
         }
+        this.removeSatelliteFromGroupIfNeeded(satelliteUuid);
+    }
+
+    private removeSatelliteFromGroupIfNeeded(satelliteUuid: string) {
+        if (this.groupsOfSatellites.length) {
+            this.groupsOfSatellites.forEach((group: GroupOfSatelites) => {
+                const index = group.satellitesUuid.findIndex(satelliteUuidFromGroup => satelliteUuidFromGroup === satelliteUuid);
+                if (index !== -1) {
+                    group.satellitesUuid.splice(index, 1);
+                }
+            });
+        }
     }
 
     changeSatelliteAltitude(satelliteUuid: string, altitude: number) {
