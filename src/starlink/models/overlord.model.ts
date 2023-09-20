@@ -1,27 +1,28 @@
 import { EnableStatus } from "../enums/enable-status.enum";
 import { Operator } from "./operator.model";
+import { Satellite } from "./satellite.model";
 
 export class Overlord extends Operator {
   constructor(operator) {
       super(operator);
   }
 
-  changeSatelliteActivationStatus(satelliteUuid: string, newStatus: EnableStatus): void {
-    const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
-    if (satellite) {
-        satellite.setSatelliteActivationStatus(newStatus);
+  changeSatelliteActivationStatus(satellite: Satellite, newStatus: EnableStatus): void {
+    const satelliteToChange = this.satellites.find(operatorSatellite => satellite.uuid === operatorSatellite.uuid);
+    if (satelliteToChange) {
+      satelliteToChange.setSatelliteActivationStatus(newStatus);
     }
   }
 
   changeSatelliteActivationStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
     const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
     if (index !== -1) {
-        this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteActivationStatus(satelliteUuid, newStatus));
+        this.groupsOfSatellites[index].satellites.forEach(satellite => this.changeSatelliteActivationStatus(satellite, newStatus));
     }
   }
 
   changeActivationStatusOfAllSatellites(newStatus: EnableStatus) {
-    this.satellites.forEach(satellite => this.changeSatelliteActivationStatus(satellite.uuid, newStatus));
+    this.satellites.forEach(satellite => this.changeSatelliteActivationStatus(satellite, newStatus));
   }
    
 }

@@ -1,22 +1,23 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Satellite } from './satellite.model';
 
 export class GroupOfSatelites {
   uuid: string;
-  satellitesUuid: string[];
+  satellites: Satellite[];
   
   constructor() {
     this.uuid = uuidv4();
-    this.satellitesUuid = [];
+    this.satellites = [];
   }
 
-  addSatelliteToGroup(satellitUuid: string): void {
-    this.satellitesUuid.push(satellitUuid);
+  addSatelliteToGroup(satellite: Satellite): void {
+    this.satellites.push(satellite);
   }
 
-  removeSatelliteFromGroup(satellitUuid: string) {
-    const index = this.satellitesUuid.findIndex(satellitUuidInGroup => satellitUuidInGroup === satellitUuid);
+  removeSatelliteFromGroup(satellite: Satellite) {
+    const index = this.satellites.findIndex(satelliteInGroup => satelliteInGroup.uuid === satellite.uuid);
     if (index !== -1) {
-        this.satellitesUuid.splice(index, 1);
+        this.satellites.splice(index, 1);
     }
   }
 

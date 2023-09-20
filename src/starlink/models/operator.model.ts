@@ -23,59 +23,59 @@ export class Operator {
         this.satellites.push(satellite);
     }
 
-    removeSatellite(satelliteUuid: string): void {
-        const index = this.satellites.findIndex(satellite => satellite.uuid === satelliteUuid);
+    removeSatellite(satellite: Satellite): void {
+        const index = this.satellites.findIndex(operatorSatellite => operatorSatellite.uuid === satellite.uuid);
         if (index !== -1) {
             this.satellites.splice(index, 1);
         }
-        this.removeSatelliteFromGroupIfNeeded(satelliteUuid);
+        this.removeSatelliteFromGroupIfNeeded(satellite);
     }
 
-    private removeSatelliteFromGroupIfNeeded(satelliteUuid: string) {
+    private removeSatelliteFromGroupIfNeeded(satellite: Satellite) {
         if (this.groupsOfSatellites.length) {
             this.groupsOfSatellites.forEach((group: GroupOfSatelites) => {
-                const index = group.satellitesUuid.findIndex(satelliteUuidFromGroup => satelliteUuidFromGroup === satelliteUuid);
+                const index = group.satellites.findIndex(satelliteFromGroup => satelliteFromGroup.uuid === satellite.uuid);
                 if (index !== -1) {
-                    group.satellitesUuid.splice(index, 1);
+                    group.removeSatelliteFromGroup(satellite);
                 }
             });
         }
     }
 
-    changeSatelliteAltitude(satelliteUuid: string, altitude: number) {
-        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
-        if (satellite) {
-            satellite.setAltitude(altitude);
+    changeSatelliteAltitude(satellite: Satellite, altitude: number) {
+        const satelliteToChange = this.satellites.find(operatorSatellite => operatorSatellite.uuid === satellite.uuid);
+        if (satelliteToChange) {
+            satelliteToChange.setAltitude(altitude);
         }
     }
 
-    changeSatelliteCoordinates(satelliteUuid: string, coordinates: Coordinates) {
-        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
-        if (satellite) {
-            satellite.setCoordinates(coordinates);
+    changeSatelliteCoordinates(satellite: Satellite, coordinates: Coordinates) {
+        const satelliteToChange = this.satellites.find(operatorSatellite => operatorSatellite.uuid === satellite.uuid);
+        if (satelliteToChange) {
+            satelliteToChange.setCoordinates(coordinates);
         }
     }
 
-    changeSatelliteSolarSailStatus(satelliteUuid: string, newStatus: EnableStatus): void {
-        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
-        if (satellite) {
-            satellite.setSolarSailStatus(newStatus);
+    changeSatelliteSolarSailStatus(satellite: Satellite, newStatus: EnableStatus): void {
+        const satelliteToChange = this.satellites.find(operatorSatellite => operatorSatellite.uuid === satellite.uuid);
+        if (satelliteToChange) {
+            satelliteToChange.setSolarSailStatus(newStatus);
         }
     }
 
-    changeSatelliteSignalTransmissionStatus(satelliteUuid: string, newStatus: EnableStatus): void {
-        const satellite = this.satellites.find(satellite => satellite.uuid === satelliteUuid);
-        if (satellite) {
-            satellite.setSignalTransmissionStatus(newStatus);
+    changeSatelliteSignalTransmissionStatus(satellite: Satellite, newStatus: EnableStatus): void {
+        const satelliteToChange = this.satellites.find(operatorSatellite => operatorSatellite.uuid === satellite.uuid);
+        if (satelliteToChange) {
+            satelliteToChange.setSignalTransmissionStatus(newStatus);
         }
     }
 
     //Methods for groups
 
-    prepareGroupOfSatelites(satellitesUuid?: string[]): void {
+    prepareGroupOfSatelites(satellites?: Satellite[]): void {
         const newGroupOfSatellites = new GroupOfSatelites();
-        if (satellitesUuid && satellitesUuid.length) {
-            newGroupOfSatellites.satellitesUuid = [...satellitesUuid, ...newGroupOfSatellites.satellitesUuid];
+        if (satellites && satellites.length) {
+            newGroupOfSatellites.satellites = [...satellites, ...newGroupOfSatellites.satellites];
         }
         this.groupsOfSatellites.push(newGroupOfSatellites);
     }
@@ -83,28 +83,28 @@ export class Operator {
     changeSatelliteAltitudeInGroup(groupOfSatellitesUuid: string, altitude: number) {
         const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
         if (index !== -1) {
-            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteAltitude(satelliteUuid, altitude));
+            this.groupsOfSatellites[index].satellites.forEach(satellite => this.changeSatelliteAltitude(satellite, altitude));
         }
     }
 
     changeSatelliteCoordinatesInGroup(groupOfSatellitesUuid: string, coordinates: Coordinates) {
         const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
         if (index !== -1) {
-            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteCoordinates(satelliteUuid, coordinates));
+            this.groupsOfSatellites[index].satellites.forEach(satellite => this.changeSatelliteCoordinates(satellite, coordinates));
         }
     }
     
     changeSatelliteSolarSailStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
         const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
         if (index !== -1) {
-            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteSolarSailStatus(satelliteUuid, newStatus));
+            this.groupsOfSatellites[index].satellites.forEach(satellite => this.changeSatelliteSolarSailStatus(satellite, newStatus));
         }
     }
 
     changeSatelliteSignalTransmissionStatusInGroup(groupOfSatellitesUuid: string, newStatus: EnableStatus) {
         const index = this.groupsOfSatellites.findIndex(groupOfSatellite => groupOfSatellite.uuid === groupOfSatellitesUuid);
         if (index !== -1) {
-            this.groupsOfSatellites[index].satellitesUuid.forEach(satelliteUuid => this.changeSatelliteSignalTransmissionStatus(satelliteUuid, newStatus));
+            this.groupsOfSatellites[index].satellites.forEach(satellite => this.changeSatelliteSignalTransmissionStatus(satellite, newStatus));
         }
     }
 
